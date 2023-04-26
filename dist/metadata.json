@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 {"project_name":"focusterms","tag":"v0.0.0","previous_tag":"","version":"0.0.1-next","commit":"66c1ba46f7b97e5d33be6a742b6c8adcd3e68d77","date":"2023-04-26T13:06:18.779502-07:00","runtime":{"goos":"darwin","goarch":"amd64"}}
-=======
-{"project_name":"focusterms","tag":"v0.0.0","previous_tag":"","version":"0.0.1-next","commit":"83d8332a350206dd2789690128fb1ba1222927c5","date":"2023-04-26T11:39:13.680656-07:00","runtime":{"goos":"darwin","goarch":"amd64"}}
->>>>>>> b9a76ae (Add opentelemtry)
