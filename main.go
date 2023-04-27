@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -71,21 +72,24 @@ func main() {
 		logger.Fatalf("Error parsing JSON data: %s", err)
 	}
 
-	// Pretty print the JSON and write it to a file
+	// Pretty print the JSON and encode it as base64
 	jsonStr, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		logger.Fatalf("Error pretty-printing JSON: %s", err)
 	}
 
-	err = ioutil.WriteFile(dataPath, jsonStr, 0o644)
+	base64Str := base64.StdEncoding.EncodeToString(jsonStr)
+
+	// Write the base64-encoded string to a file
+	err = ioutil.WriteFile(dataPath, []byte(base64Str), 0o644)
 	if err != nil {
-		logger.Fatalf("Error writing JSON to file: %s", err)
+		logger.Fatalf("Error writing base64-encoded JSON to file: %s", err)
 	}
 
 	msg := "Successfully fetched instance metadata and wrote it to file"
 	msg = fmt.Sprintf("%s %s", msg, dataPath)
 
 	// Log a success message
-	fmt.Printf(string(jsonStr))
+	fmt.Printf(base64Str)
 	logger.Printf(msg)
 }
