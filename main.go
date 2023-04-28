@@ -32,15 +32,30 @@ func main() {
 		return
 	}
 
-	dataPath := filepath.Join(wd, "ec2-instance-metadata.json")
+	dataPath := filepath.Join(wd, "meta.json")
+	dataPath2 := filepath.Join(wd, "meta-b64.txt")
 
-	err = os.Remove(dataPath)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			fmt.Println("Error deleting file:", err)
+	// Check if file exists
+	if _, err := os.Stat(dataPath); err == nil {
+		// File exists, delete it
+		err := os.Remove(dataPath)
+		if err != nil {
+			// Error occurred while deleting the file
+			panic(err)
 		}
 	}
 	logger.Printf("%s successfully deleted", dataPath)
+
+	// Check if file exists
+	if _, err := os.Stat(dataPath2); err == nil {
+		// File exists, delete it
+		err := os.Remove(dataPath2)
+		if err != nil {
+			// Error occurred while deleting the file
+			panic(err)
+		}
+	}
+	logger.Printf("%s successfully deleted", dataPath2)
 
 	// Make the HTTP request to the metadata service
 	url := "http://169.254.169.254/latest/dynamic/instance-identity/document"
@@ -72,24 +87,33 @@ func main() {
 		logger.Fatalf("Error parsing JSON data: %s", err)
 	}
 
-	// Pretty print the JSON and encode it as base64
+	// Pretty print the JSON and write it to a file
 	jsonStr, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		logger.Fatalf("Error pretty-printing JSON: %s", err)
 	}
 
+	err = ioutil.WriteFile(dataPath, jsonStr, 0o644)
+	if err != nil {
+		logger.Fatalf("Error writing JSON to file: %s", err)
+	}
+
 	base64Str := base64.StdEncoding.EncodeToString(jsonStr)
 
 	// Write the base64-encoded string to a file
-	err = ioutil.WriteFile(dataPath, []byte(base64Str), 0o644)
+	err = ioutil.WriteFile(dataPath2, []byte(base64Str), 0o644)
 	if err != nil {
 		logger.Fatalf("Error writing base64-encoded JSON to file: %s", err)
 	}
 
 	msg := "Successfully fetched instance metadata and wrote it to file"
 	msg = fmt.Sprintf("%s %s", msg, dataPath)
+	logger.Printf(msg)
+
+	msg = "Successfully fetched instance metadata and wrote it to file"
+	msg = fmt.Sprintf("%s %s", msg, dataPath2)
+	logger.Printf(msg)
 
 	// Log a success message
 	fmt.Printf(base64Str)
-	logger.Printf(msg)
 }
